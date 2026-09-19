@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Forest green + orange on cream (from the Austin-for-School-
+ * Board reference), with a deep navy neutral for dark surfaces and a muted
+ * stars-and-stripes treatment for the hero — this is a State House race.
+ *
+ * Contrast rules (WCAG AA) baked into the palette:
+ *  - Text on orange is always --color-ink (7.8:1). Never white on orange.
+ *  - Orange text/outlines appear only on dark surfaces (navy / forest-900+).
+ *  - Green text on cream uses forest-700 or darker (5.9:1+).
+ */
+@theme {
+  --color-forest-950: #06301f;
+  --color-forest-900: #0a3d2a;
+  --color-forest-800: #0b4d31;
+  --color-forest-700: #0f6b41;
+  --color-forest-600: #148553;
+
+  --color-orange-600: #e07f0a;
+  --color-orange-500: #f7941d;
+  --color-orange-400: #fab04d;
+
+  --color-cream-50: #fbf9f2;
+  --color-cream-100: #f5f1e3;
+  --color-cream-200: #eae4ce;
+
+  --color-mint-100: #e4f1e6;
+
+  --color-navy-950: #0a1120;
+  --color-navy-900: #0f1a30;
+  --color-navy-800: #17264a;
+
+  --color-ink: #1a1f1c;
+  --color-ink-soft: #454d48;
+
+  --font-display: var(--font-oswald), "Arial Narrow", Impact, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-script: var(--font-caveat), "Segoe Script", cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  /* Safety net: the page should never scroll sideways on a phone. */
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--color-cream-50);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Visible keyboard focus. Green on light surfaces, orange on dark ones. */
+:focus-visible {
+  outline: 3px solid var(--color-forest-700);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.on-dark :focus-visible {
+  outline-color: var(--color-orange-500);
+}
+
+/*
+ * Muted stars-and-stripes surface.
+ *   section background  -> navy base + dusty-red / pale stripes
+ *   ::before            -> navy canton with a faint starfield, feathered out
+ *   ::after             -> heavy dark shade so text stays readable
+ * Direct children are lifted above the pseudo-elements.
+ */
+.flag-bg {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-navy-900);
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgb(158 46 58 / 0.62) 0 3rem,
+    rgb(236 230 214 / 0.14) 3rem 6rem
+  );
+}
+.flag-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(62%, 44rem);
+  height: 62%;
+  background-color: rgb(23 38 74 / 0.96);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpolygon fill='white' fill-opacity='0.3' points='11,6.5 12,9.6 15.3,9.6 12.6,11.5 13.6,14.6 11,12.7 8.4,14.6 9.4,11.5 6.7,9.6 10,9.6'/%3E%3Cpolygon fill='white' fill-opacity='0.3' transform='translate(22 22)' points='11,6.5 12,9.6 15.3,9.6 12.6,11.5 13.6,14.6 11,12.7 8.4,14.6 9.4,11.5 6.7,9.6 10,9.6'/%3E%3C/svg%3E");
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(135deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(135deg, #000 55%, transparent 100%);
+  pointer-events: none;
+}
+.flag-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Darkest behind the text, lighter toward the edges so the flag reads. */
+  background:
+    radial-gradient(ellipse 72% 68% at 50% 46%, rgb(6 10 20 / 0.76), rgb(6 10 20 / 0.26) 100%),
+    linear-gradient(180deg, rgb(6 10 20 / 0.16), rgb(6 10 20 / 0.4));
+  pointer-events: none;
+}
+.flag-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Diagonal section edges, echoing the reference site. */
+.slant-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - clamp(2rem, 6vw, 5rem)), 0 100%);
+  padding-bottom: clamp(5rem, 10vw, 9rem);
+}
+.slant-top {
+  clip-path: polygon(0 clamp(2rem, 6vw, 5rem), 100% 0, 100% 100%, 0 100%);
+  padding-top: clamp(5rem, 10vw, 9rem);
+}
+
+.font-display {
+  letter-spacing: 0.01em;
+}
+
+/* Even line breaks on headlines and quotes at every screen width. */
+h1,
+h2,
+h3,
+blockquote {
+  text-wrap: balance;
+}
