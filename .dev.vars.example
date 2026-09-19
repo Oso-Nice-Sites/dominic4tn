@@ -1,0 +1,8 @@
+# Copy to .dev.vars (gitignored) for local development.
+# In production set these as Worker secrets: `npx wrangler secret put FIELD_ENCRYPTION_KEY`
+
+# AES-256 key for field-level encryption (src/lib/crypto.ts).
+# Generate with:  openssl rand -base64 32
+# Losing this key makes every encrypted column permanently unreadable — back it
+# up somewhere safe and separate from the code and the database.
+FIELD_ENCRYPTION_KEY=
