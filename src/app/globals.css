@@ -3,7 +3,7 @@
 /*
  * Design tokens. Forest green + orange on cream (from the Austin-for-School-
  * Board reference), with a deep navy neutral for dark surfaces and a muted
- * stars-and-stripes treatment for the hero — this is a State House race.
+ * Tennessee state flag treatment for the hero — this is a State House race.
  *
  * Contrast rules (WCAG AA) baked into the palette:
  *  - Text on orange is always --color-ink (7.8:1). Never white on orange.
@@ -30,6 +30,10 @@
   --color-navy-950: #0a1120;
   --color-navy-900: #0f1a30;
   --color-navy-800: #17264a;
+
+  /* Tennessee flag, toned down (the hero also gets a dark shade over it). */
+  --color-tn-red: #9a2431;
+  --color-tn-blue: #1f3a7d;
 
   --color-ink: #1a1f1c;
   --color-ink-soft: #454d48;
@@ -83,34 +87,36 @@ img {
 }
 
 /*
- * Muted stars-and-stripes surface.
- *   section background  -> navy base + dusty-red / pale stripes
- *   ::before            -> navy canton with a faint starfield, feathered out
+ * Muted Tennessee state flag surface: crimson field, a blue disc edged in white
+ * holding three white stars (the three Grand Divisions), and a blue bar at the
+ * fly end set off by a thin white stripe.
+ *   section background  -> crimson field + the disc, centred
+ *   ::before            -> the fly-end bar (right edge)
  *   ::after             -> heavy dark shade so text stays readable
  * Direct children are lifted above the pseudo-elements.
  */
 .flag-bg {
   position: relative;
   isolation: isolate;
-  background-color: var(--color-navy-900);
-  background-image: repeating-linear-gradient(
-    180deg,
-    rgb(158 46 58 / 0.62) 0 3rem,
-    rgb(236 230 214 / 0.14) 3rem 6rem
-  );
+  background-color: var(--color-tn-red);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='97' fill='%23f3efe4'/%3E%3Ccircle cx='100' cy='100' r='92' fill='%231f3a7d'/%3E%3Ccircle cx='100' cy='100' r='78' fill='none' stroke='%23f3efe4' stroke-width='2.5'/%3E%3Cpolygon fill='%23f3efe4' transform='translate(100 78) scale(26)' points='0,-1 0.2245,-0.309 0.951,-0.309 0.3633,0.118 0.588,0.809 0,0.382 -0.588,0.809 -0.3633,0.118 -0.951,-0.309 -0.2245,-0.309'/%3E%3Cpolygon fill='%23f3efe4' transform='translate(72 126) scale(26)' points='0,-1 0.2245,-0.309 0.951,-0.309 0.3633,0.118 0.588,0.809 0,0.382 -0.588,0.809 -0.3633,0.118 -0.951,-0.309 -0.2245,-0.309'/%3E%3Cpolygon fill='%23f3efe4' transform='translate(128 126) scale(26)' points='0,-1 0.2245,-0.309 0.951,-0.309 0.3633,0.118 0.588,0.809 0,0.382 -0.588,0.809 -0.3633,0.118 -0.951,-0.309 -0.2245,-0.309'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 46% 40%;
+  /* Sized to the section's height so the whole emblem shows, never cropped. */
+  background-size: auto 78%;
 }
 .flag-bg::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  width: min(62%, 44rem);
-  height: 62%;
-  background-color: rgb(23 38 74 / 0.96);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpolygon fill='white' fill-opacity='0.3' points='11,6.5 12,9.6 15.3,9.6 12.6,11.5 13.6,14.6 11,12.7 8.4,14.6 9.4,11.5 6.7,9.6 10,9.6'/%3E%3Cpolygon fill='white' fill-opacity='0.3' transform='translate(22 22)' points='11,6.5 12,9.6 15.3,9.6 12.6,11.5 13.6,14.6 11,12.7 8.4,14.6 9.4,11.5 6.7,9.6 10,9.6'/%3E%3C/svg%3E");
-  background-size: 44px 44px;
-  -webkit-mask-image: linear-gradient(135deg, #000 55%, transparent 100%);
-  mask-image: linear-gradient(135deg, #000 55%, transparent 100%);
+  right: 0;
+  bottom: 0;
+  width: clamp(1.5rem, 9vw, 7.5rem);
+  background: linear-gradient(
+    90deg,
+    rgb(243 239 228 / 0.92) 0 12%,
+    var(--color-tn-blue) 12% 100%
+  );
   pointer-events: none;
 }
 .flag-bg::after {
@@ -119,7 +125,7 @@ img {
   inset: 0;
   /* Darkest behind the text, lighter toward the edges so the flag reads. */
   background:
-    radial-gradient(ellipse 72% 68% at 50% 46%, rgb(6 10 20 / 0.76), rgb(6 10 20 / 0.26) 100%),
+    radial-gradient(ellipse 72% 68% at 50% 46%, rgb(6 10 20 / 0.64), rgb(6 10 20 / 0.24) 100%),
     linear-gradient(180deg, rgb(6 10 20 / 0.16), rgb(6 10 20 / 0.4));
   pointer-events: none;
 }
