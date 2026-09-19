@@ -1,0 +1,12 @@
+{
+  "_comment": "PLACEHOLDER — not applied. Allow policy for campaign staff. Replace the example emails, then create with POST /accounts/{account_id}/access/policies (see README.md).",
+  "name": "Campaign staff (admin)",
+  "decision": "allow",
+  "include": [
+    { "email": { "email": "staff-one@example.com" } },
+    { "email": { "email": "staff-two@example.com" } }
+  ],
+  "require": [],
+  "exclude": [],
+  "session_duration": "8h"
+}
