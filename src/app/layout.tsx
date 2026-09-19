@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Caveat_Brush, Inter, Oswald } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { PreviewBanner } from "@/components/PreviewBanner";
 import "./globals.css";
 
 const oswald = Oswald({
@@ -37,6 +38,10 @@ export const metadata: Metadata = {
   },
   description:
     "Dominic Howard is running for Tennessee State House in District 46 — the correct call for Tennessee families.",
+  // Keep the stakeholder preview out of search results.
+  ...(process.env.NEXT_PUBLIC_PREVIEW === "true" && {
+    robots: { index: false, follow: false },
+  }),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -52,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <PreviewBanner />
         <Header />
         <main id="main" className="flex-1">
           {children}
