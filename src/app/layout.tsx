@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat_Brush, Inter, Oswald } from "next/font/google";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { PreviewBanner } from "@/components/PreviewBanner";
-import "./globals.css";
+import { homeDescription } from "@/content/defaults";
+import { isStaticPreview } from "@/sanity/env";
+
+// Root layout: just the document shell. The public site's chrome (header,
+// footer, global CSS) lives in (site)/layout.tsx so the Studio at /studio
+// stays untouched by it.
 
 const oswald = Oswald({
   variable: "--font-oswald",
@@ -36,34 +38,15 @@ export const metadata: Metadata = {
     default: "Dominic Howard for Tennessee State House, District 46",
     template: "%s | Dominic Howard for Tennessee",
   },
-  description:
-    "Dominic Howard is running for Tennessee State House in District 46 — the correct call for Tennessee families.",
+  description: homeDescription,
   // Keep the stakeholder preview out of search results.
-  ...(process.env.NEXT_PUBLIC_PREVIEW === "true" && {
-    robots: { index: false, follow: false },
-  }),
+  ...(isStaticPreview && { robots: { index: false, follow: false } }),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${oswald.variable} ${inter.variable} ${caveat.variable}`}
-    >
-      <body className="flex min-h-screen flex-col">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-orange-500 focus:px-4 focus:py-2 focus:font-semibold focus:text-ink"
-        >
-          Skip to content
-        </a>
-        <PreviewBanner />
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-      </body>
+    <html lang="en" className={`${oswald.variable} ${inter.variable} ${caveat.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

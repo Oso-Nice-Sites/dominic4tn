@@ -8,10 +8,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:pages": "GITHUB_PAGES=true next build",
+    "build:pages": "rm -rf .next/dev/types out && GITHUB_PAGES=true next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "studio": "sanity dev",
+    "studio:build": "sanity build",
+    "studio:deploy": "sanity deploy",
+    "seed:generate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-seed.ts",
+    "seed:import": "sanity dataset import src/sanity/seed.ndjson --missing",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
@@ -22,10 +28,14 @@
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.6",
+    "@sanity/image-url": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "next": "16.3.5",
+    "next-sanity": "^13.3.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "sanity": "^6.15.0",
+    "styled-components": "^6.5.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -35,6 +45,7 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "groq-js": "^2.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.0.1",

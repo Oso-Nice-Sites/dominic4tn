@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { nav, site } from "@/content/site";
+import type { ResolvedLink } from "@/lib/links";
 
-export function MobileNav() {
+export function MobileNav({ items, donateUrl }: { items: ResolvedLink[]; donateUrl?: string | null }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -41,8 +41,8 @@ export function MobileNav() {
         className="absolute inset-x-0 top-full border-t border-cream-50/10 bg-navy-950 px-4 pb-6 pt-2 shadow-xl"
       >
         <ul className="flex flex-col">
-          {nav.map((item) => (
-            <li key={item.href} className="border-b border-cream-50/10">
+          {items.map((item) => (
+            <li key={item.key} className="border-b border-cream-50/10">
               <Link
                 href={item.href}
                 onClick={() => setOpen(false)}
@@ -53,15 +53,17 @@ export function MobileNav() {
             </li>
           ))}
         </ul>
-        <a
-          href={site.donateUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-5 flex items-center justify-center rounded-md bg-orange-500 px-6 py-3 font-display text-base font-semibold uppercase tracking-wider text-ink"
-        >
-          Donate Today
-          <span className="sr-only"> (opens in a new tab)</span>
-        </a>
+        {donateUrl && (
+          <a
+            href={donateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 flex items-center justify-center rounded-md bg-orange-500 px-6 py-3 font-display text-base font-semibold uppercase tracking-wider text-ink"
+          >
+            Donate Today
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        )}
       </nav>
     </div>
   );
