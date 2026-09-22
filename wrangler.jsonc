@@ -1,9 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "dominic4tn",
+  // Sc4320@gmail.com's Account — the campaign's Cloudflare account (not the
+  // developer's own). Disambiguates when a login has access to more than one.
+  "account_id": "4a8ed85d5e0570e4dcb5efb815081e22",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-09-01",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -17,13 +23,19 @@
   "observability": {
     "enabled": true
   },
+  "routes": [
+    {
+      "pattern": "dominichoward.org",
+      "custom_domain": true
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "dominic4tn",
-      // Placeholder — replace with the real ID from `wrangler d1 create dominic4tn`.
-      // Local dev and `npm run preview` work without it.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_name": "dominichowardDB",
+      // Created 2026-09-22 via `wrangler d1 create dominichowardDB`, region ENAM,
+      // on Sc4320@gmail.com's Cloudflare account.
+      "database_id": "8f2afbd9-b364-4e8c-9155-bbbe3c8dca3a",
       "migrations_dir": "drizzle"
     }
   ]
