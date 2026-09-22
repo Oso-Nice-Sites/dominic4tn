@@ -13,4 +13,10 @@ export default defineCliConfig({
   // The <name>.sanity.studio address the Studio is published at. Set it (or
   // answer the prompt on the first `npm run studio:deploy`) — see the README.
   studioHost: process.env.SANITY_STUDIO_HOST,
+  deployment: {
+    // Pins the deployed app's identity so `sanity deploy` (including in CI,
+    // where there's no one to answer a prompt) always updates the same app
+    // instead of asking which one to use. Not a secret.
+    appId: "txlczd35aloz9kbw8o0bkfx3",
+  },
 });
