@@ -1,11 +1,11 @@
-# Continuous integration: every pull request and every push to main must pass
+# Continuous integration: every pull request and every push to main or staging must pass
 # these checks. Needs no secrets. Deploying is separate — see deploy.yml.
 name: CI
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, staging]
 
 permissions:
   contents: read

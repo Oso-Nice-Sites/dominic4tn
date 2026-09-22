@@ -286,31 +286,44 @@ tooling and must stay out of `src/app`). CI fails the build if the Worker exceed
 
 ## CI/CD
 
+Two long-lived branches: **`staging`** is where feature branches land and get tested together;
+**`main`** is what's actually deployable — it only ever receives already-tested code from
+`staging`, via its own pull request. Nothing deploys automatically from either; deploys are a
+deliberate, manual step from `main` (see [Enabling automatic deploys](#enabling-automatic-deploys)
+if you want to change that later).
+
 ```mermaid
 flowchart LR
-  PR[Pull request] --> CI[ci.yml<br/>typecheck · lint · tests · schema · build · Worker size]
-  PR --> PV[pages.yml<br/>preview build check]
-  CI -->|green + review| M[Merge to main]
-  M --> PP[pages.yml deploys the<br/>stakeholder preview]
-  M --> DEP{{deploy.yml<br/>manual}} --> CF[Cloudflare Worker]
-  M -.->|content model changed| ST{{studio.yml<br/>manual}} --> SH[Hosted Studio]
+  FB[Feature branch] -->|PR| CI1[ci.yml + pages.yml checks]
+  CI1 -->|green + review| MS[Merge to staging]
+  MS -->|test here: npm run preview, etc.| PM[PR: staging → main]
+  PM --> CI2[ci.yml + pages.yml checks again]
+  CI2 -->|green + review| MM[Merge to main]
+  MM --> PP[pages.yml deploys the<br/>stakeholder preview]
+  MM --> DEP{{deploy.yml<br/>manual}} --> CF[Cloudflare Worker]
+  MM -.->|content model changed| ST{{studio.yml<br/>manual}} --> SH[Hosted Studio]
 ```
 
 | Workflow | Trigger | What it does | Status |
 | --- | --- | --- | --- |
-| [`ci.yml`](.github/workflows/ci.yml) | every PR, push to `main` | typecheck, lint, unit tests, CMS schema validation, production build, Cloudflare build, **Worker-size gate** (3 MiB) | active |
-| [`pages.yml`](.github/workflows/pages.yml) | PR (build only), push to `main`, manual | builds the static preview; deploys it from `main` | active |
+| [`ci.yml`](.github/workflows/ci.yml) | every PR, push to `main` or `staging` | typecheck, lint, unit tests, CMS schema validation, production build, Cloudflare build, **Worker-size gate** (3 MiB) | active |
+| [`pages.yml`](.github/workflows/pages.yml) | PR (build only), push to `main`, manual | builds the static preview; deploys it from `main` (still tracks `main` only — it's what stakeholders see, not in-progress work on `staging`) | active |
 | [`deploy.yml`](.github/workflows/deploy.yml) | manual | optionally applies D1 migrations, then builds and deploys to Cloudflare | **written, not yet run** (needs the Cloudflare account) |
 | [`studio.yml`](.github/workflows/studio.yml) | manual | validates the schema and publishes the Studio to Sanity's hosting | **written, not yet run** (needs the Sanity project) |
 
 ### Day-to-day flow
 
-1. Branch from `main` (`feat/…`, `fix/…`); keep changes small and focused.
-2. Open a pull request. **CI must be green** before merging.
-3. Merge. Content edits never go through this flow — editors publish in the Studio.
-4. Deploy when ready: *Actions → Deploy to Cloudflare → Run workflow* (tick
-   *apply_migrations* only if the PR added a migration).
-5. If the content model changed, run *Publish Studio* **after** the site deploy.
+1. Branch from `staging` (`feat/…`, `fix/…`); keep changes small and focused.
+2. Open a pull request **into `staging`**. **CI must be green** before merging.
+3. Merge into `staging`. This is where you verify things together before they're
+   deployable — run `npm run preview` (the real Workers runtime) or check the app locally
+   against that branch. Content edits never go through this flow — editors publish in the
+   Studio regardless of which branch the code is on.
+4. When `staging` is in good shape, open a pull request **from `staging` into `main`**. This
+   runs CI again, on the combined changes.
+5. Merge into `main`. Deploy when ready: *Actions → Deploy to Cloudflare → Run workflow* (tick
+   *apply_migrations* only if a migration was added since the last deploy).
+6. If the content model changed, run *Publish Studio* **after** the site deploy.
 
 ### Enabling automatic deploys
 
@@ -323,8 +336,9 @@ required reviewers, add `push: branches: [main]` to its `on:` block.
   `CLOUDFLARE_ACCOUNT_ID`, `SANITY_AUTH_TOKEN`.
 - **Variables:** `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_STUDIO_HOST`.
 - **Environment `production`** with *required reviewers*, so a person approves each deploy.
-- **Branch protection on `main`:** require pull requests, require the **CI / verify** check,
-  and block force-pushes.
+- **Branch protection on `main` and `staging`:** require pull requests, require the
+  **CI / verify** check, and block force-pushes. On `main` specifically, only accept pull
+  requests from `staging` (not arbitrary feature branches) so nothing skips the staging step.
 - **Dependabot** (recommended): weekly updates for `npm` and `github-actions`
   (`.github/dependabot.yml`; not added yet).
 
