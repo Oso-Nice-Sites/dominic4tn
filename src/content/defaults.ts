@@ -39,8 +39,7 @@ export const defaultSettings: SiteSettings = {
   tagline: "The Correct Call for Tennessee Families.",
   email,
   donateUrl,
-  // TODO(campaign): required campaign-finance disclaimer text is unconfirmed.
-  disclaimer: "[Paid-for-by disclaimer pending campaign confirmation]",
+  disclaimer: "Paid for by Dominic Howard for TN State House, Paul Parisot Treasurer",
   navigation: [
     { _key: "nav-about", label: "About", href: "/#about" },
     { _key: "nav-priorities", label: "Priorities", href: "/#priorities" },
