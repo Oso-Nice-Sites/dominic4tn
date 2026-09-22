@@ -1,0 +1,51 @@
+# Manual publish of the content editor (Sanity Studio) to Sanity's hosting.
+#
+# Run this after the content model changes (anything under src/sanity/schemaTypes,
+# structure.ts, or sanity.config.ts) so the hosted Studio matches the code. The
+# website itself never needs this — it only reads published content.
+#
+# NOT YET EXERCISED: needs a Sanity project and a deploy token, so it has not run.
+#
+# One-time setup — see README.md ("Content management → Publishing the Studio"):
+#   Secret    SANITY_AUTH_TOKEN   (a Sanity API token with deploy access)
+#   Variables SANITY_PROJECT_ID, SANITY_DATASET, SANITY_STUDIO_HOST
+name: Publish Studio
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-studio
+  cancel-in-progress: false
+
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate schema
+        run: npx sanity schema validate
+        env:
+          SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+          SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET }}
+
+      - name: Deploy Studio
+        run: npx sanity deploy --yes
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+          SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET }}
+          SANITY_STUDIO_HOST: ${{ vars.SANITY_STUDIO_HOST }}

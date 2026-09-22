@@ -3,8 +3,8 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 // GitHub Pages stakeholder preview (see .github/workflows/pages.yml).
 // Opt-in: a normal build, `next dev`, and the Cloudflare Workers build are
-// unaffected. Pages can only host static files, so this exports the current
-// (static) pages and cannot run anything that needs a server or D1.
+// unaffected. Pages can only host static files, so this exports the pages using
+// the built-in content (no CMS) and cannot run anything that needs a server or D1.
 const isPagesPreview = process.env.GITHUB_PAGES === "true";
 const pagesBasePath = process.env.PAGES_BASE_PATH ?? "/dominic4tn";
 
@@ -16,7 +16,10 @@ const nextConfig: NextConfig = isPagesPreview
       images: { unoptimized: true },
       env: { NEXT_PUBLIC_PREVIEW: "true" },
     }
-  : {};
+  : {
+      // Photos uploaded in the CMS are served from Sanity's image CDN.
+      images: { remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }] },
+    };
 
 export default nextConfig;
 

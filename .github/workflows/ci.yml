@@ -1,0 +1,61 @@
+# Continuous integration: every pull request and every push to main must pass
+# these checks. Needs no secrets. Deploying is separate — see deploy.yml.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      # Catches content-model mistakes a normal build would not (needs no Sanity account).
+      - name: Validate CMS schema
+        run: npx sanity schema validate
+        env:
+          SANITY_STUDIO_PROJECT_ID: ci-placeholder
+
+      - name: Build the site
+        run: npm run build
+
+      # The Worker must stay under Cloudflare's Free-plan limit (3 MiB compressed).
+      # Bundling the CMS Studio into it once pushed it over — this keeps it honest.
+      - name: Build for Cloudflare Workers
+        run: npx opennextjs-cloudflare build
+
+      - name: Check Worker size
+        run: |
+          out=$(npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/worker" 2>&1)
+          echo "$out"
+          gz=$(echo "$out" | sed -n 's/.*gzip: \([0-9.]*\) KiB.*/\1/p' | head -1)
+          if [ -z "$gz" ]; then echo "Could not read the Worker size from wrangler output"; exit 1; fi
+          echo "Worker size: ${gz} KiB compressed (limit: 3072 KiB on the Free plan)"
+          awk -v g="$gz" 'BEGIN { if (g + 0 > 3072) { print "::error::Worker is over the 3 MiB compressed Free-plan limit"; exit 1 } }'
