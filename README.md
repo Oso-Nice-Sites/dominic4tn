@@ -162,8 +162,8 @@ infra/cloudflare-access/    placeholder Cloudflare Access config for /admin/*
 
 ### For campaign editors
 
-Open the content editor at **`https://<studio-name>.sanity.studio`** (your developer will send
-the exact link) and sign in with the account you were invited with.
+Open the content editor at **https://dominic-howard-campaign.sanity.studio** and sign in with
+the account you were invited with.
 
 - **Site settings** — candidate name, contact email and phone, the donation link, the
   “Paid for by” disclaimer, the top menu, and the small links at the bottom of every page.

@@ -17,7 +17,7 @@
     "studio:build": "sanity build",
     "studio:deploy": "sanity deploy",
     "seed:generate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-seed.ts",
-    "seed:import": "sanity dataset import src/sanity/seed.ndjson --missing",
+    "seed:import": "sanity dataset import src/sanity/seed.ndjson --dataset production --missing",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
