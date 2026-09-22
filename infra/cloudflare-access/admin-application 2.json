@@ -1,0 +1,11 @@
+{
+  "_comment": "PLACEHOLDER — not applied. Self-hosted Access application that gates /admin/* on the production hostname. dominic4tn.com is an assumed domain (taken from the campaign email address): change it to the real hostname. Create with POST /accounts/{account_id}/access/apps (see README.md), then attach the policy from admin-policy.json.",
+  "name": "Dominic4TN Admin",
+  "type": "self_hosted",
+  "destinations": [{ "type": "public", "uri": "dominic4tn.com/admin/*" }],
+  "session_duration": "8h",
+  "auto_redirect_to_identity": false,
+  "app_launcher_visible": false,
+  "allowed_idps": [],
+  "policies": []
+}
