@@ -38,7 +38,6 @@ export const defaultSettings: SiteSettings = {
   office: "State House · District 46",
   tagline: "The Correct Call for Tennessee Families.",
   email,
-  phone: "(615) 669-8272",
   donateUrl,
   // TODO(campaign): required campaign-finance disclaimer text is unconfirmed.
   disclaimer: "[Paid-for-by disclaimer pending campaign confirmation]",

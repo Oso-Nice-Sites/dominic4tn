@@ -13,7 +13,7 @@ import { structure } from "./src/sanity/structure";
 // SANITY_STUDIO_* variables are the ones Sanity's tooling exposes to the Studio.
 export default defineConfig({
   name: "default",
-  title: "Dominic4TN Website",
+  title: "Dominic Howard Campaign",
   projectId: process.env.SANITY_STUDIO_PROJECT_ID ?? "",
   dataset: process.env.SANITY_STUDIO_DATASET || "production",
   plugins: [structureTool({ structure })],
