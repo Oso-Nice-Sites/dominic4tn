@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /*
  * D1 (SQLite) schema.
@@ -10,9 +10,14 @@ import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
  * timestamps, consent flags — is plaintext so staff can sort and filter.
  * `_enc` columns cannot be searched or sorted in SQL.
  *
- * NOTE: columns are inferred from the campaign proposal (volunteer / yard-sign /
- * contact intake, event RSVPs, VoteBuilder export audit). Reconcile with
- * Section 5 of the build brief before applying to a real database.
+ * volunteers / roles / tags / volunteerRoles / volunteerTags / eventRsvps
+ * follow the campaign's own ERD (Lucidchart, "Volunteer Database"). Events
+ * themselves are NOT modeled here — campaign staff manage events in Sanity;
+ * eventRsvps.eventId is a Sanity document ID, not a foreign key.
+ *
+ * requests, contactMessages, and exportLog are still inferred from the
+ * campaign proposal (a separate SQL design for these is in progress) —
+ * reconcile those with the build brief before applying to a real database.
  */
 
 const id = () =>
@@ -33,20 +38,59 @@ export const volunteers = sqliteTable(
     nameEnc: text("name_enc").notNull(),
     emailEnc: text("email_enc").notNull(),
     phoneEnc: text("phone_enc"),
-    addressEnc: text("address_enc"),
-    // What they'd like to help with (e.g. canvassing, phone banking) — not personal data.
-    interests: text("interests"),
-    notesEnc: text("notes_enc"),
-    // Record of SMS consent at sign-up time.
-    smsOptIn: integer("sms_opt_in", { mode: "boolean" }).notNull().default(false),
-    status: text("status", { enum: ["new", "contacted", "active", "inactive"] })
-      .notNull()
-      .default("new"),
-    // Set when included in a VoteBuilder export (see export_log).
-    exportedAt: integer("exported_at", { mode: "timestamp" }),
+    // e.g. "S" / "M" / "L" / "XL" — not enforced here; the ERD doesn't define
+    // the allowed list, so validate it in the form/API instead.
+    shirtSize: text("shirt_size"),
+    // Free text for now (e.g. "weekday evenings", "weekends only").
+    availability: text("availability"),
+    language: text("language"),
+    // Allowed values not specified in the ERD — enforce in the API layer.
+    status: text("status").notNull().default("new"),
+    commitmentType: text("commitment_type"),
     createdAt: createdAt(),
   },
   (t) => [index("volunteers_status_created_idx").on(t.status, t.createdAt)],
+);
+
+// How someone can help (e.g. canvassing, phone banking). Not personal data.
+export const roles = sqliteTable("roles", {
+  id: id(),
+  name: text("name").notNull().unique(),
+});
+
+// Skills/traits a volunteer has (e.g. bilingual, has a car). Not personal data.
+export const tags = sqliteTable("tags", {
+  id: id(),
+  name: text("name").notNull().unique(),
+});
+
+// Junction: which roles each volunteer picked. Composite primary key — a
+// volunteer can't be linked to the same role twice.
+export const volunteerRoles = sqliteTable(
+  "volunteer_roles",
+  {
+    volunteerId: text("volunteer_id")
+      .notNull()
+      .references(() => volunteers.id),
+    roleId: text("role_id")
+      .notNull()
+      .references(() => roles.id),
+  },
+  (t) => [primaryKey({ columns: [t.volunteerId, t.roleId] })],
+);
+
+// Junction: which tags apply to each volunteer.
+export const volunteerTags = sqliteTable(
+  "volunteer_tags",
+  {
+    volunteerId: text("volunteer_id")
+      .notNull()
+      .references(() => volunteers.id),
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tags.id),
+  },
+  (t) => [primaryKey({ columns: [t.volunteerId, t.tagId] })],
 );
 
 // Yard sign requests.
@@ -92,16 +136,19 @@ export const eventRsvps = sqliteTable(
     id: id(),
     // ID of the event document in Sanity (events are edited there, not in D1).
     eventId: text("event_id").notNull(),
+    // Optional: set once a matching/created volunteer record exists. An RSVP
+    // doesn't require one — it captures its own name/email either way.
+    volunteerId: text("volunteer_id").references(() => volunteers.id),
     nameEnc: text("name_enc").notNull(),
     emailEnc: text("email_enc").notNull(),
-    phoneEnc: text("phone_enc"),
-    guests: integer("guests").notNull().default(1),
-    status: text("status", { enum: ["confirmed", "cancelled"] })
-      .notNull()
-      .default("confirmed"),
+    // Whether they'd also like to volunteer, not just attend.
+    alsoVolunteer: integer("also_volunteer", { mode: "boolean" }).notNull().default(false),
     createdAt: createdAt(),
   },
-  (t) => [index("event_rsvps_event_idx").on(t.eventId)],
+  (t) => [
+    index("event_rsvps_event_idx").on(t.eventId),
+    index("event_rsvps_volunteer_idx").on(t.volunteerId),
+  ],
 );
 
 // Audit trail: one row per staff export of readable data (e.g. VoteBuilder CSV).
@@ -120,6 +167,14 @@ export const exportLog = sqliteTable(
 
 export type Volunteer = typeof volunteers.$inferSelect;
 export type NewVolunteer = typeof volunteers.$inferInsert;
+export type Role = typeof roles.$inferSelect;
+export type NewRole = typeof roles.$inferInsert;
+export type Tag = typeof tags.$inferSelect;
+export type NewTag = typeof tags.$inferInsert;
+export type VolunteerRole = typeof volunteerRoles.$inferSelect;
+export type NewVolunteerRole = typeof volunteerRoles.$inferInsert;
+export type VolunteerTag = typeof volunteerTags.$inferSelect;
+export type NewVolunteerTag = typeof volunteerTags.$inferInsert;
 export type YardSignRequest = typeof requests.$inferSelect;
 export type NewYardSignRequest = typeof requests.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;

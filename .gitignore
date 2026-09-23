@@ -27,6 +27,15 @@
 /dist/
 /.sanity/
 
+# raw campaign photos staged for upload to Sanity (see scripts/make-why-collage.py) —
+# these are large binaries that belong in Sanity's asset store, not git history.
+/src/images/
+/scripts/*.jpg
+/scripts/*.jpeg
+/scripts/*.JPG
+/scripts/*.JPEG
+/scripts/*.png
+
 # production
 /build
 
