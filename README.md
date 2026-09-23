@@ -237,6 +237,23 @@ back to its built-in text, which may be out of date.
    (`studio.yml` / `npm run studio:deploy`), so editors can never publish something the live
    site can't render yet.
 
+#### Attaching a photo from the command line
+
+Normally editors upload photos in the Studio. To set one from a script or a one-off CLI edit
+instead (as was done for the homepage's "Meet Dominic" and "Why I'm Running" photos): fetch the
+document with `sanity documents get <id> --dataset production`, add an `image` field shaped like
+
+```json
+{ "_type": "image", "alt": "Required description", "_sanityAsset": "image@file:///absolute/path/to/photo.jpg" }
+```
+
+save the full edited document as NDJSON, and run
+`sanity dataset import <file> --dataset production --replace`. The importer uploads the file,
+creates the asset, and rewrites `_sanityAsset` into a real `asset._ref` — `alt` and everything
+else in the document passes through untouched. (`_sanityAsset` also accepts an `http(s)://` URL,
+not just a local file.) This bypasses the Studio's own review/publish step, so double-check the
+document afterward with `sanity documents get`.
+
 ---
 
 ## Deploying to Cloudflare
