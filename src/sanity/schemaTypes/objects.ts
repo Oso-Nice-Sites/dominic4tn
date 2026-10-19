@@ -202,3 +202,74 @@ export function photoField(name: string, title: string, description?: string) {
     ],
   });
 }
+
+// The yellow banner above the header on every page. Defaults match
+// src/content/defaults.ts so a fresh banner starts out with today's wording.
+export const votingNotice = defineType({
+  name: "votingNotice",
+  title: "Voting notice banner",
+  type: "object",
+  options: { collapsible: true, collapsed: false },
+  fields: [
+    defineField({
+      name: "show",
+      title: "Show the banner",
+      type: "boolean",
+      description: "Untick to hide the banner on every page right away.",
+      initialValue: true,
+    }),
+    defineField({
+      name: "headline",
+      title: "Headline (bold)",
+      type: "string",
+      initialValue: "Early Voting is until October 29th, 2026.",
+      validation: (rule) => rule.max(90),
+    }),
+    defineField({
+      name: "textBeforeLink",
+      title: "Text before the button",
+      type: "string",
+      initialValue: "Don't know where to vote? Click",
+      validation: (rule) => rule.max(90),
+    }),
+    defineField({
+      name: "linkText",
+      title: "Button text",
+      type: "string",
+      description: "Keep it short, e.g. HERE.",
+      initialValue: "HERE",
+      validation: (rule) => rule.max(24),
+    }),
+    defineField({
+      name: "textAfterLink",
+      title: "Text after the button",
+      type: "string",
+      initialValue: "for your voting location",
+      validation: (rule) => rule.max(90),
+    }),
+    defineField({
+      name: "linkUrl",
+      title: "Button web address",
+      type: "url",
+      initialValue: "https://www.wilsontnvotes.gov/election-day-voting-locations/",
+      validation: (rule) => rule.uri({ scheme: ["https", "http"] }),
+    }),
+    defineField({
+      name: "linkDescription",
+      title: "What the button does (read aloud by screen readers)",
+      type: "string",
+      description:
+        "Read after the button text, so “HERE” makes sense on its own. Mention the website it goes to.",
+      initialValue: "find your voting location on the Wilson County Election Commission website",
+      validation: (rule) => rule.max(140),
+    }),
+    defineField({
+      name: "expiresAt",
+      title: "Hide automatically after",
+      type: "datetime",
+      description:
+        "The banner disappears after this date and time. Leave empty to keep it up until you untick “Show the banner”.",
+      initialValue: "2026-10-29T23:59:00-05:00",
+    }),
+  ],
+});

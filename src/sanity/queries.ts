@@ -49,6 +49,9 @@ export const siteSettingsQuery = defineQuery(`
   *[_type == "siteSettings"][0]{
     name, office, tagline, email, phone, donateUrl, disclaimer,
     navigation[]{ ${link} },
-    footerLinks[]{ ${link} }
+    footerLinks[]{ ${link} },
+    votingNotice{
+      show, headline, textBeforeLink, linkText, textAfterLink, linkUrl, linkDescription, expiresAt
+    }
   }
 `);
