@@ -62,7 +62,7 @@ function seedPage(page: PageData): SeedDocument {
 }
 
 export function buildSeedDocuments(): SeedDocument[] {
-  const { navigation, footerLinks, ...settings } = defaultSettings;
+  const { navigation, footerLinks, votingNotice, ...settings } = defaultSettings;
   return [
     {
       _id: "siteSettings",
@@ -70,6 +70,7 @@ export function buildSeedDocuments(): SeedDocument[] {
       ...settings,
       navigation: (navigation ?? []).map(link),
       footerLinks: (footerLinks ?? []).map(link),
+      ...(votingNotice ? { votingNotice: { _type: "votingNotice", ...votingNotice } } : {}),
     },
     ...Object.values(defaultPages).map(seedPage),
   ];

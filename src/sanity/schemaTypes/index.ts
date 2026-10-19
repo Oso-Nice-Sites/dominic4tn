@@ -1,5 +1,5 @@
 import { page, siteSettings } from "./documents";
-import { blockContent, card, ctaButton, link, stat } from "./objects";
+import { blockContent, card, ctaButton, link, stat, votingNotice } from "./objects";
 import {
   cardsSection,
   ctaSection,
@@ -26,4 +26,5 @@ export const schemaTypes = [
   stat,
   card,
   blockContent,
+  votingNotice,
 ];

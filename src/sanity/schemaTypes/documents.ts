@@ -116,6 +116,11 @@ export const siteSettings = defineType({
       description: "The legally required campaign-finance disclaimer shown at the bottom of every page.",
     }),
     defineField({
+      name: "votingNotice",
+      title: "Voting notice banner (yellow, top of every page)",
+      type: "votingNotice",
+    }),
+    defineField({
       name: "navigation",
       title: "Menu links (top of every page)",
       type: "array",

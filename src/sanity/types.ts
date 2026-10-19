@@ -84,6 +84,21 @@ export type PageData = {
   sections: Section[];
 };
 
+/** The yellow banner above the header (e.g. "Early Voting is until …"). */
+export type VotingNotice = {
+  show?: boolean | null;
+  headline?: string | null;
+  /** Sentence leading up to the button, e.g. "Don't know where to vote? Click". */
+  textBeforeLink?: string | null;
+  linkText?: string | null;
+  textAfterLink?: string | null;
+  linkUrl?: string | null;
+  /** Read by screen readers after the button text, e.g. "find your voting location …". */
+  linkDescription?: string | null;
+  /** ISO date-time; the banner hides itself after this. Empty = never. */
+  expiresAt?: string | null;
+};
+
 export type SiteSettings = {
   name: string;
   office: string;
@@ -94,4 +109,5 @@ export type SiteSettings = {
   disclaimer?: string | null;
   navigation?: LinkItem[] | null;
   footerLinks?: LinkItem[] | null;
+  votingNotice?: VotingNotice | null;
 };

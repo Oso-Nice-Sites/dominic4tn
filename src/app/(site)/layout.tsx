@@ -1,10 +1,11 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PreviewBanner } from "@/components/PreviewBanner";
+import { VotingNotice } from "@/components/VotingNotice";
 import { getSiteSettings } from "@/sanity/content";
 import "../globals.css";
 
-// Chrome for the public website: skip link, header, footer. Site-wide details
+// Chrome for the public website: skip link, voting notice, header, footer. Site-wide details
 // (name, menu, contact info, disclaimer) come from "Site settings" in the CMS.
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       >
         Skip to content
       </a>
+      <VotingNotice notice={settings.votingNotice} />
       <PreviewBanner />
       <Header settings={settings} />
       <main id="main" className="flex-1">

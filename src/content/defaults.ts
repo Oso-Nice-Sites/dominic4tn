@@ -49,6 +49,17 @@ export const defaultSettings: SiteSettings = {
     { _key: "footer-privacy", label: "Privacy Policy", href: "/privacy" },
     { _key: "footer-accessibility", label: "Accessibility Statement", href: "/accessibility" },
   ],
+  votingNotice: {
+    show: true,
+    headline: "Early Voting is until October 29th, 2026.",
+    textBeforeLink: "Don't know where to vote? Click",
+    linkText: "HERE",
+    textAfterLink: "for your voting location",
+    linkUrl: "https://www.wilsontnvotes.gov/election-day-voting-locations/",
+    linkDescription: "find your voting location on the Wilson County Election Commission website",
+    // 11:59 PM Central on the last day of early voting (CDT, UTC-5, until Nov 1).
+    expiresAt: "2026-10-29T23:59:00-05:00",
+  },
 };
 
 export const homeDescription =

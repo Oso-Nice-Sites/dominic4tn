@@ -1,8 +1,29 @@
 import { defaultSettings } from "@/content/defaults";
-import type { LinkItem, SiteSettings } from "./types";
+import type { LinkItem, SiteSettings, VotingNotice } from "./types";
 
 const usable = (links: LinkItem[] | null | undefined): LinkItem[] | undefined =>
   links?.filter((link) => link.label && link.href);
+
+/**
+ * The voting banner. Never set up in the CMS -> the built-in banner. Once an
+ * editor has saved it, empty text falls back to the default wording, but an
+ * empty end date means "no end date" and an unticked box hides it.
+ */
+function mergeVotingNotice(fetched: VotingNotice | null | undefined): VotingNotice | undefined {
+  const fallback = defaultSettings.votingNotice ?? undefined;
+  if (!fetched || !fallback) return fetched ?? fallback;
+  const text = <K extends keyof VotingNotice>(key: K) => fetched[key] || fallback[key];
+  return {
+    show: fetched.show ?? fallback.show,
+    headline: text("headline"),
+    textBeforeLink: text("textBeforeLink"),
+    linkText: text("linkText"),
+    textAfterLink: text("textAfterLink"),
+    linkUrl: text("linkUrl"),
+    linkDescription: text("linkDescription"),
+    expiresAt: fetched.expiresAt ?? null,
+  };
+}
 
 /**
  * Combine "Site settings" from the CMS with the built-in defaults: an editor's
@@ -22,5 +43,6 @@ export function mergeSettings(fetched: SiteSettings | null): SiteSettings {
     disclaimer: pick("disclaimer"),
     navigation: usable(fetched.navigation) ?? defaultSettings.navigation,
     footerLinks: usable(fetched.footerLinks) ?? defaultSettings.footerLinks,
+    votingNotice: mergeVotingNotice(fetched.votingNotice),
   };
 }

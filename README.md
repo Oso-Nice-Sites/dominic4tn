@@ -152,7 +152,7 @@ src/
   lib/crypto.ts             field-level encryption
 sanity.config.ts            Studio configuration
 drizzle/                    generated SQL migrations
-infra/cloudflare-access/    placeholder Cloudflare Access config for /admin/*
+infra/cloudflare-access/    Cloudflare Access config for /admin/* (applied)
 .github/workflows/          ci.yml, pages.yml, deploy.yml, studio.yml
 ```
 
@@ -419,9 +419,8 @@ audit (axe or Lighthouse) before launch — none is wired into CI yet.
 
 - **Personal data is encrypted before it is stored** (AES-256-GCM, random IV per value,
   ciphertext bound to its column). The key lives only in a Worker secret.
-- **`/admin/*`** is reserved for Cloudflare Access; only placeholder config exists
-  ([`infra/cloudflare-access`](infra/cloudflare-access/README.md)) and it has not been applied
-  or verified against the live API.
+- **`/admin/*`** is protected by Cloudflare Access, which has been set up on the live account
+  ([`infra/cloudflare-access`](infra/cloudflare-access/README.md)).
 - **Secrets never go in the repo** (`.env*` and `.dev.vars*` are gitignored). Use GitHub secrets
   and `wrangler secret put`.
 - **Content links** are validated in the CMS (only `https`, `http`, `mailto`, `tel`, `/…`, `#…`).
@@ -450,7 +449,7 @@ audit (axe or Lighthouse) before launch — none is wired into CI yet.
 
 - The **intake forms** (volunteer, yard sign, contact, event RSVP), their API routes, spam
   protection (Cloudflare Turnstile), and the staff-only **VoteBuilder export** tool.
-- **Cloudflare Access** for `/admin/*` (config is a placeholder) and admin UI.
+- The **admin UI** behind `/admin/*` (Cloudflare Access protecting it is done).
 - **Integrations** with VoteBuilder, ActBlue, and voter-registration data sources. These need
   credentials or approvals from those parties and a legal/terms-of-use review first; nothing is
   designed yet.
