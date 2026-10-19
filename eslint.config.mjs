@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     // Sanity Studio build output / local state:
     "dist/**",
     ".sanity/**",
+    // node_modules kept out of iCloud sync (node_modules is a symlink to it):
+    "node_modules.nosync/**",
   ]),
 ]);
 
